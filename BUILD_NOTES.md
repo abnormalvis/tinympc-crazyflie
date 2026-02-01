@@ -154,10 +154,23 @@ venv_cfclient/               # Python 虚拟环境（用于 Crazyflie 工具）
 ## 下一步
 
 1. **测试固件**：烧录到 Crazyflie 并测试基本功能
-2. **参数调优**：根据实际飞行测试调整 TinyMPC 控制器参数
-3. **性能验证**：测试控制性能和资源使用情况
-4. **日志记录**：使用 Crazyflie 日志系统记录运行数据
+- 方案一：使用 `make cload` 直接在 tinympc-crazyflie/ 目录下运行 
+  `CLOAD_CMDS="-w radio://0/80/2M/E7E7E7E7E7" make cload`
+- 方案二: 使用 `cfloader` 命令行工具
+  source venv_cfclient/bin/activate
+cfloader flash build/cf2.bin stm32-fw -w radio://0/80/2M/E7E7E7E7E7
+1. **参数调优**：根据实际飞行测试调整 TinyMPC 控制器参数
+2. **性能验证**：测试控制性能和资源使用情况
+3. **日志记录**：使用 Crazyflie 日志系统记录运行数据
 
+- 验证 `lsusb | grep Bitcraze`
+- 如果需要添加 USB 权限：
+```
+sudo groupadd plugdev
+sudo usermod -a -G plugdev $USER
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="1915", ATTRS{idProduct}=="7777", MODE="0664", GROUP="plugdev"' | sudo tee /etc/udev/rules.d/99-crazyradio.rules
+sudo udevadm control --reload-rules
+```
 ## 参考资料
 - [TinyMPC Crazyflie README](README.md)
 - [Bitcraze Crazyflie Firmware Documentation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/)
